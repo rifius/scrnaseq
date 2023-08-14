@@ -14,6 +14,9 @@ workflow MTX_CONVERSION {
     main:
         ch_versions = Channel.empty()
 
+        mych_matrices = mtx_matrices
+        mych_matrices.dump(tag: 'MTX_CONVERSION(mod):PreH5AD', pretty: true)
+
         //
         // Convert matrix to h5ad
         //

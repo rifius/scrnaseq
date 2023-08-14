@@ -205,6 +205,7 @@ workflow SCRNASEQ {
         ch_versions = ch_versions.mix(UNIVERSC_ALIGN.out.ch_versions)
         ch_mtx_matrices = ch_mtx_matrices.mix(UNIVERSC_ALIGN.out.universc_out)
     }
+    ch_mtx_matrices.dump(tag: 'SCRNASEQ::PreMtxConv', pretty: true)
 
     // Run mtx to h5ad conversion subworkflow
     MTX_CONVERSION (

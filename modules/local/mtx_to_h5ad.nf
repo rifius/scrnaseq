@@ -10,7 +10,8 @@ process MTX_TO_H5AD {
     input:
     // inputs from cellranger nf-core module does not come in a single sample dir
     // for each sample, the sub-folders and files come directly in array.
-    tuple val(meta), path(inputs)
+    // CR 20230803: Files are explicitly named / used below, so I just want to remove the collision in cellranger case
+    tuple val(meta), path(inputs, stageAs: '??/*')
     path txp2gene
     path star_index
 
@@ -44,6 +45,8 @@ process MTX_TO_H5AD {
     if (params.aligner == 'cellranger')
     """
     # convert file types
+    pwd
+    ls -la .
     mtx_to_h5ad.py \\
         --aligner ${params.aligner} \\
         --input filtered_feature_bc_matrix.h5 \\

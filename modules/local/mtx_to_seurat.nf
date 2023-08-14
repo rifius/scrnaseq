@@ -8,7 +8,8 @@ process MTX_TO_SEURAT {
     input:
     // inputs from cellranger nf-core module does not come in a single sample dir
     // for each sample, the sub-folders and files come directly in array.
-    tuple val(meta), path(inputs)
+    // CR 20230803: Removing collisione in staging files
+    tuple val(meta), path(inputs, stageAs: '??/*')
 
     output:
     path "${meta.id}/*.rds", emit: seuratObjects
@@ -20,9 +21,9 @@ process MTX_TO_SEURAT {
     script:
     def aligner = params.aligner
     if (params.aligner == "cellranger") {
-        matrix   = "filtered_feature_bc_matrix/matrix.mtx.gz"
-        barcodes = "filtered_feature_bc_matrix/barcodes.tsv.gz"
-        features = "filtered_feature_bc_matrix/features.tsv.gz"
+        matrix   = "*filtered_feature_bc_matrix/matrix.mtx.gz"
+        barcodes = "*filtered_feature_bc_matrix/barcodes.tsv.gz"
+        features = "*filtered_feature_bc_matrix/features.tsv.gz"
     } else if (params.aligner == "kallisto") {
         matrix   = "*count/counts_unfiltered/*.mtx"
         barcodes = "*count/counts_unfiltered/*.barcodes.txt"
@@ -38,6 +39,12 @@ process MTX_TO_SEURAT {
     }
     """
     mkdir ${meta.id}
+    pwd
+    ls -la .
+    echo ${meta.id}
+    echo $matrix
+    echo $barcodes
+    echo $features
     """
 
     if (params.aligner == 'kallisto' && params.kb_workflow != 'standard')
