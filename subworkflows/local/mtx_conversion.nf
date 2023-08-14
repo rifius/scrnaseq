@@ -14,14 +14,20 @@ workflow MTX_CONVERSION {
     main:
         ch_versions = Channel.empty()
 
-        mych_matrices = mtx_matrices
+        // Prepare Seurat mtx input, we let pass the files in filtered.../ *and* the filtered....h5
+        mych_matrices = mtx_matrices.map { meta, ofiles ->
+                                           def ffiles = ofiles.findAll { it =~ /filtered_feature_bc_matrix/ ||
+                                                                         it =~ /count\/counts_unfiltered\// ||
+                                                                         it =~ /af_quant\/alevin\//         ||
+                                                                         it =~ /\.Solo\.out\/Gene/ }
+                                           [meta, ffiles] }
         mych_matrices.dump(tag: 'MTX_CONVERSION(mod):PreH5AD', pretty: true)
 
         //
         // Convert matrix to h5ad
         //
         MTX_TO_H5AD (
-            mtx_matrices,
+            mych_matrices,
             txp2gene,
             star_index
         )
@@ -38,7 +44,7 @@ workflow MTX_CONVERSION {
         // Convert matrix do seurat
         //
         MTX_TO_SEURAT (
-            mtx_matrices
+            mych_matrices
         )
 
         //TODO CONCAT h5ad and MTX to h5ad should also have versions.yaml output

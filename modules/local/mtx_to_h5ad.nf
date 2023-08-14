@@ -10,8 +10,9 @@ process MTX_TO_H5AD {
     input:
     // inputs from cellranger nf-core module does not come in a single sample dir
     // for each sample, the sub-folders and files come directly in array.
-    // CR 20230803: Files are explicitly named / used below, so I just want to remove the collision in cellranger case
-    tuple val(meta), path(inputs, stageAs: '??/*')
+    // CR 20230803: Files are explicitly named / used below, 
+    // THIS WILL FAIL FOR NON_STD KALLISTO, see spliced unspliced below
+    tuple val(meta), path(inputs)
     path txp2gene
     path star_index
 
@@ -26,17 +27,26 @@ process MTX_TO_H5AD {
     script:
     // def file paths for aligners (except cellranger)
     if (params.aligner == 'kallisto') {
-        mtx_matrix   = "*count/counts_unfiltered/*.mtx"
-        barcodes_tsv = "*count/counts_unfiltered/*.barcodes.txt"
-        features_tsv = "*count/counts_unfiltered/*.genes.txt"
+        // mtx_matrix   = "*count/counts_unfiltered/*.mtx"
+        // barcodes_tsv = "*count/counts_unfiltered/*.barcodes.txt"
+        // features_tsv = "*count/counts_unfiltered/*.genes.txt"
+        mtx_matrix   = "*.mtx"
+        barcodes_tsv = "*.barcodes.txt"
+        features_tsv = "*.genes.txt"
     } else if (params.aligner == 'alevin') {
-        mtx_matrix   = "*_alevin_results/af_quant/alevin/quants_mat.mtx"
-        barcodes_tsv = "*_alevin_results/af_quant/alevin/quants_mat_rows.txt"
-        features_tsv = "*_alevin_results/af_quant/alevin/quants_mat_cols.txt"
+        // mtx_matrix   = "*_alevin_results/af_quant/alevin/quants_mat.mtx"
+        // barcodes_tsv = "*_alevin_results/af_quant/alevin/quants_mat_rows.txt"
+        // features_tsv = "*_alevin_results/af_quant/alevin/quants_mat_cols.txt"
+        mtx_matrix   = "quants_mat.mtx"
+        barcodes_tsv = "quants_mat_rows.txt"
+        features_tsv = "quants_mat_cols.txt"
     } else if (params.aligner == 'star') {
-        mtx_matrix   = "*.Solo.out/Gene*/filtered/matrix.mtx.gz"
-        barcodes_tsv = "*.Solo.out/Gene*/filtered/barcodes.tsv.gz"
-        features_tsv = "*.Solo.out/Gene*/filtered/features.tsv.gz"
+        // mtx_matrix   = "*.Solo.out/Gene*/filtered/matrix.mtx.gz"
+        // barcodes_tsv = "*.Solo.out/Gene*/filtered/barcodes.tsv.gz"
+        // features_tsv = "*.Solo.out/Gene*/filtered/features.tsv.gz"
+        mtx_matrix   = "matrix.mtx.gz"
+        barcodes_tsv = "barcodes.tsv.txt"
+        features_tsv = "features.tsv.txt"
     }
 
     //
@@ -45,8 +55,6 @@ process MTX_TO_H5AD {
     if (params.aligner == 'cellranger')
     """
     # convert file types
-    pwd
-    ls -la .
     mtx_to_h5ad.py \\
         --aligner ${params.aligner} \\
         --input filtered_feature_bc_matrix.h5 \\
