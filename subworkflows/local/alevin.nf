@@ -68,6 +68,7 @@ workflow SCRNASEQ_ALEVIN {
     emit:
     ch_versions
     alevin_results = SIMPLEAF_QUANT.out.alevin_results
+    quant_mtx = SIMPLEAF_QUANT.out.quant_mtx
     alevinqc = ALEVINQC.out.report
     for_multiqc = SIMPLEAF_QUANT.out.alevin_results.collect{it[1]}.ifEmpty([])
 }
