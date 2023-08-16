@@ -19,6 +19,11 @@ process SIMPLEAF_QUANT {
     path whitelist
 
     output:
+    tuple val(meta), path("*_alevin_results"),                          emit: alevin_results            // The path to the results basedir is required for ALEVINQC
+    tuple val(meta), path("*_alevin_results/af_quant/alevin/**"),       optional: true, emit: quant_mtx
+    tuple val(meta), path("*_alevin_results/af_quant/*", type: file),   optional: true, emit: quant_other
+    tuple val(meta), path("*_alevin_results/af_map/**"),                optionalL true, emit: map_out
+    path  "versions.yml",                                               emit: versions
     tuple val(meta), path("*_alevin_results"),                      emit: alevin_results            // The path to the results basedir is required for ALEVINQC
     tuple val(meta), path("*_alevin_results/af_quant/alevin/**"),   optional: true, emit: quant_mtx
     tuple val(meta), path("*_alevin_results/af_quant/*"),           optional: true, type: file, emit: quant_other
