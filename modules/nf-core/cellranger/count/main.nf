@@ -21,7 +21,8 @@ process CELLRANGER_COUNT {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
+    def args = task.ext.args ? ( task.ext.args =~ /--force-cells \d+/ ? task.ext.args : task.ext.args.replaceAll(/--force-cells/, "--force-cells ${meta.expected_cells}") ) : ''
+    // def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def reference_name = reference.name
     """

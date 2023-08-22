@@ -10,8 +10,6 @@ process MTX_TO_H5AD {
     input:
     // inputs from cellranger nf-core module does not come in a single sample dir
     // for each sample, the sub-folders and files come directly in array.
-    // CR 20230803: Files are explicitly named / used below, 
-    // THIS WILL FAIL FOR NON_STD KALLISTO, see spliced unspliced below
     tuple val(meta), path(inputs)
     path txp2gene
     path star_index
@@ -34,9 +32,6 @@ process MTX_TO_H5AD {
         barcodes_tsv = "*.barcodes.txt"
         features_tsv = "*.genes.txt"
     } else if (params.aligner == 'alevin') {
-        // mtx_matrix   = "*_alevin_results/af_quant/alevin/quants_mat.mtx"
-        // barcodes_tsv = "*_alevin_results/af_quant/alevin/quants_mat_rows.txt"
-        // features_tsv = "*_alevin_results/af_quant/alevin/quants_mat_cols.txt"
         mtx_matrix   = "quants_mat.mtx"
         barcodes_tsv = "quants_mat_rows.txt"
         features_tsv = "quants_mat_cols.txt"
